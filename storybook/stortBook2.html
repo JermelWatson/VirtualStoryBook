@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flipbook 2</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-image: url(background.jpg);
+      background-size: cover;
+      text-align: center;
+      padding-top: 60px;
+    }
+
+    .page {
+      height: 700px;
+      transform-style: preserve-3d;
+      transition: transform 1s ease;
+      transform-origin: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 70px;
+      margin-right: 70px;
+      position: relative;
+    }
+    .page::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('back_image.jpg');
+      background-size: cover;
+      background-position: center;
+      filter: blur(7px);
+      z-index: 0;
+    }
+
+    .page .content {
+      text-align: center;
+      margin-top: -100px;
+      z-index: 1;
+    }
+
+    .content img {
+      width: 70%;
+      max-height: 1000px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .content h2 {
+      margin: 10px 0 5px;
+      font-size: 24px;
+    }
+
+    .content p {
+      margin: 10px 0px 10px 0px;
+      background-color: rgba(245, 245, 220, 1.0);
+      font-size: 16px;
+      color: black;
+    }
+
+    .buttons {
+      margin-top: 20px;
+    }
+
+    .buttons button {
+      padding: 10px 15px;
+      font-size: 16px;
+      margin: 0 10px;
+      cursor: pointer;
+      border-radius: 7px;
+      background-color: skyblue;
+    }
+
+    .buttons button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Lets Create Your Story</h2>
+
+<div class="book">
+  <div class="page" id="card">
+    <div class="content" id="pageContent">
+      <!-- Content will be dynamically inserted here -->
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button id="prevBtn">Previous</button>
+    <button id="nextBtn">Next</button>
+  </div>
+</div>
+
+
+<script>
+  const card = document.getElementById('card');
+  const contentBox = document.getElementById('pageContent');
+  const nextBtn = document.getElementById('nextBtn');
+  const prevBtn = document.getElementById('prevBtn');
+
+  let rotation = 0;
+  let currentPage = 0;
+
+  const pages = [
+    {
+      img: 'coverPage.jpeg',
+      title: 'Chapter 1',
+      text: 'This is the story of little red riding hood.'
+    },
+    {
+      img: 'page2.jpg',
+      title: 'Chapter 2',
+      text: 'Little red riding hood was sent to grandma house to give here some cakes'
+    },
+    {
+      img: 'page3.jpeg',
+      title: 'Chapter 3',
+      text: 'On her way to grandma house little red riding hood went through the forest and met Mr. Wolf and told Mr. wolf she is bringing treats for grandma'
+    },
+    {
+      img: 'page5.webp',
+      title: 'Chapter 4',
+      text: 'Mr. Wolf rushed to Grandma house and ate her and planned to eat little red riding hood too'
+    },
+    {
+      img: 'end.jpg',
+      title: 'The End',
+      text: 'Mr. Wolf was caught by Mr. Butcher and red and grandma was saved'
+    }
+  ];
+
+  function renderPage(index) {
+    const page = pages[index];
+    contentBox.innerHTML = `
+      <img src="${page.img}" alt="${page.title}">
+      <h2>${page.title}</h2>
+      <p>${page.text}</p>
+    `;
+  }
+
+  function flipCard(forward = true) {
+    const nextIndex = forward ? currentPage + 1 : currentPage - 1;
+    if (nextIndex < 0 || nextIndex >= pages.length) return;
+
+    rotation = (rotation - 360) % 3600;
+    card.style.transform = `rotateY(${rotation}deg)`;
+    currentPage = nextIndex;
+
+    setTimeout(() => {
+      renderPage(currentPage);
+    }, 500); // Mid-flip content update
+
+    prevBtn.disabled = currentPage === 0;
+    nextBtn.disabled = currentPage === pages.length - 1;
+  }
+
+  nextBtn.addEventListener('click', () => flipCard(true));
+  prevBtn.addEventListener('click', () => flipCard(false));
+
+  // Init
+  renderPage(currentPage);
+  prevBtn.disabled = true;
+
+</script>
+
+</body>
+</html>
